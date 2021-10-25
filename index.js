@@ -1,21 +1,55 @@
-const promotionTimer = new Date('Dec 19,2021 00:00:00');
+class CountdownTimer {
+    constructor({selector,targetDate}) {
+        this.selector = document.querySelector(selector);
+        this.targetDate = targetDate;
+        this.days = this.selector.querySelector('[data-value="days"]');
+        this.hours = this.selector.querySelector('[data-value="hours"]');
+        this.mins = this.selector.querySelector('[data-value="mins"]');
+        this.secs = this.selector.querySelector('[data-value="secs"]');
+        this.start();
+        this.init();
+    }
+    start() {
+        this.timerId = setInterval(() => {
+            const startTime = this.targetDate - Date.now();
+            if (startTime <= 0) {
+                clearInterval(this.timerId);
+                return;
+            }
+            const timeRemaining = this.getTime(startTime);
+            this.updateTime(timeRemaining);
+        }, 1000);
+    }
+    getTime(time){
+        const days = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
+        const hours = this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        const mins = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
+        const secs = this.pad(Math.floor((time % (1000 * 60)) / 1000));
 
-const timer = document.querySelector('.js-timer');
+        return { days, hours, mins, secs };
+    }
+    pad(value){
+        return String(value).padStart(2, '0');
+    }
 
-setInterval(() => {
-    const dateNow = Date.now();
+    updateTime({ days, hours, mins, secs }){
+        this.days.textContent = days;
+        this.hours.textContent = hours;
+        this.mins.textContent = mins;
+        this.secs.textContent = secs;
+    }
 
-    const distance = promotionTimer - dateNow;
-const days =  Math.floor(distance/(24*60*60*1000));
-// console.log(days);
-const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-const mins = (Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
-// console.log(mins);
-const secs = Math.floor((distance % (1000 * 60)) / 1000);
-timer.innerHTML= `days:${days} hours:${hours} mins:${mins} secs: ${secs}`;
-}, 1000);
+      init() {
+        const time = this.getTime(0);
+        this.updateTime(time);
+    }
+}
 
 
+
+const NewTimer = new CountdownTimer({
+  selector: '#timer-1',
+  targetDate: new Date('Jan 01, 2022'),
+});
 
 
